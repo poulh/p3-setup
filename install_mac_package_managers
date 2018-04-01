@@ -1,0 +1,137 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import subprocess
+import sys
+
+MANAGERS = [{
+    'name': 'homebrew',
+    'cmds': [
+        '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"',
+        'brew tap caskroom/cask'
+    ],
+    'check': 'which brew > /dev/null',
+}, {
+    'name': 'pip',
+    'cmds': [
+        'sudo easy_install pip',
+    ],
+    'check': 'which pip > /dev/null',
+}, {
+    'name': 'npm',
+    'cmds': [
+        'brew install npm',
+    ],
+    'check': 'which npm > /dev/null',
+}, {
+    'name': 'ansible',
+    'cmds': ['brew install ansible'],
+    'check': 'which ansible-playbook > /dev/null',
+}]
+
+
+def parse_args():
+
+    parser = argparse.ArgumentParser(
+        description=
+        'Installs various programs required for Symbiont development. Most using various package managers'
+    )
+    parser.add_argument(
+        '--dry-run',
+        action='store_true',
+        help='do not actually run the commands')
+
+    for mgr in MANAGERS:
+        name = mgr['name']
+
+        parser.add_argument(
+            '--{}'.format(name),
+            action='append_const',
+            const=name,
+            dest='include',
+            help='Install just {}'.format(name))
+
+        parser.add_argument(
+            '--no-{}'.format(name),
+            action='append_const',
+            const=name,
+            dest='exclude',
+            help='Skip installing {}'.format(name))
+
+    args = parser.parse_args()
+    return args
+
+
+def run_cmd(cmd, dry_run, verbose=True):
+    if verbose or dry_run:
+        print(cmd)
+
+    if dry_run == True:
+        return 0
+    else:
+        ret = subprocess.call(cmd, shell=True)
+        return ret
+    return 1
+
+
+def create_check_cmd(name, info):
+    pkg = info['pkg']
+    if pkg == 'brew':
+        return 'brew {} ls {} &> /dev/null'.format(info.get('tap', ''), name)
+    elif pkg == 'pip':
+        return 'pip show {} &> /dev/null'.format(name)
+    elif pkg == 'npm':
+        return 'npm list --global {} &> /dev/null'.format(name)
+    elif pkg == 'docker':
+        return 'docker image inspect {} &>/dev/null'.format(name)
+    elif pkg == 'sh':
+        return info['check']
+    else:
+        raise Exception('unknown pkg {} for {}'.format(pkg, name))
+
+
+def create_install_cmd(name, info):
+    pkg = info['pkg']
+
+    if pkg == 'brew':
+        return 'brew {} install {}'.format(info.get('tap', ''), name)
+    elif pkg == 'pip':
+        return 'pip install {}'.format(name)
+    elif pkg == 'npm':
+        return 'npm install --global {}'.format(name)
+    elif pkg == 'docker':
+        return 'docker pull {}'.format(name)
+    elif pkg == 'sh':
+        return info['install']
+    else:
+        raise Exception('unknown pkg {} for {}'.format(pkg, name))
+
+
+def main():
+    args = parse_args()
+
+    if os.geteuid() == 0:
+        sys.exit(
+            "sudo/root detected. do not run this script as root. it will prompt you for sudo when/if needed"
+        )
+
+    for mgr in MANAGERS:
+        name = mgr['name']
+        if args.include and (name not in args.include):
+            continue
+        if args.exclude and (name in args.exclude):
+            continue
+
+        ret = run_cmd(mgr['check'], dry_run=False, verbose=False)
+        if ret != 0:
+            for cmd in mgr['cmds']:
+                run_cmd(cmd, args.dry_run)
+        else:
+            print('{} already installed'.format(mgr['name']))
+
+
+try:
+    main()
+except Exception as e:
+    print(e.args)
