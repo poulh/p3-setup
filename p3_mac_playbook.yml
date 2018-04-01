@@ -1,0 +1,104 @@
+---  
+- hosts: localhost
+  vars_prompt:
+    - name: text_editor
+      prompt: "Pick a text editor( emacs|pycharm ):"
+      default: "skip"
+      private: no
+    - name: terminal_app
+      prompt: "Install an alternative terminal ( iterm2 ):"
+      default: "skip"
+      private: no
+    - name: markdown_app
+      prompt: "Pick a markdown (.md) editor ( macdown ):"
+      default: "skip"
+      private: no
+    - name: git_gui_app
+      prompt: "Do you want a git GUI Client? ( sourcetree|github ):"
+      default: "no"
+      private: no
+  tasks:
+  - name: Bash4
+    homebrew:
+      name: bash
+    register: bash_four_installed
+  - name: Add Bash To Shells
+    shell: echo /usr/local/bin/bash >> /etc/shells && exit
+    become: yes
+    when: bash_four_installed.changed == True
+  - name: prompt change shell
+    pause:
+      prompt: "change shell? [ y/[n] ]"
+    register: change_shell
+  - name: List Shells
+    shell: cat /etc/shells | grep bin | xargs basename | sort -u
+    register: shell_list
+    when: change_shell.user_input == "y"
+  - name: prompt pick shell
+    pause:
+      prompt: "pick shell:\n{{ shell_list.stdout }}\n"
+    register: new_shell_choice
+    when: change_shell.user_input == "y"
+  - name: Check New Shell Choice
+    shell: cat /etc/shells | grep {{ new_shell_choice.user_input }} | tail -1 # always pick bottom-most shell in list as its assumed newer versions are appended at bottom of file
+    register: new_shell
+    when: change_shell.user_input == "y"
+  - name: Change Default Shell
+    shell: chsh -s {{ new_shell.stdout }}
+    when: change_shell.user_input == "y" and new_shell.stdout != ""
+  - name: oh-my-zsh install check
+    shell: ls {{ ansible_env.HOME }}/.oh-my-zsh || true # we 'or' true so that the command doesn't fail if the file isn't there
+    register: oh_my_zsh_installed
+    when: change_shell.user_input == "y" and new_shell.stdout != "" and new_shell_choice.user_input == "zsh"
+  - name: prompt install oh-my-zsh
+    pause:
+      prompt: "install oh-my-zsh? [ y/[n] ]"
+    register: install_oh_my_zsh
+    when: change_shell.user_input == "y" and new_shell.stdout != "" and new_shell_choice.user_input == "zsh" and oh_my_zsh_installed.stdout == ""
+  - name: install oh-my-zsh
+    shell: 'sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"'
+    when: change_shell.user_input == "y" and new_shell.stdout != "" and new_shell_choice.user_input == "zsh" and oh_my_zsh_installed.stdout == "" and install_oh_my_zsh.user_input == "y"
+  - name: Tmux Terminal Multiplexer
+    homebrew:
+      name: tmux
+  - name: Hub GitHub CLI
+    homebrew:
+      name: hub
+  - name: JQ JSON CLI manipulator
+    homebrew:
+      name: jq
+  - name: HttPie curl alternative
+    homebrew:
+      name: httpie
+  - name: Docker
+    homebrew_cask:
+      name: docker
+    notify: Docker Run    
+  - name: Google Chrome
+    ignore_errors: yes
+    homebrew_cask:
+      name: google-chrome
+  - name: Install Postman REST Tool
+    ignore_errors: yes
+    homebrew_cask:
+      name: postman
+  - name: Install Text Editor
+    homebrew_cask:
+      name: "{{ text_editor }}"
+    when: text_editor != "skip"
+  - name: Install Terminal 
+    homebrew_cask:
+      name: "{{ terminal_app }}"
+    when: terminal_app != "skip"
+  - name: Install Markdown Editor
+    homebrew_cask:
+      name: "{{ markdown_app }}"
+    when: markdown_app != "skip"
+  - name: Install Git GUI
+    homebrew_cask:
+      name: "{{ git_gui_app }}"
+    when: git_gui_app != "no"
+  handlers:
+  - name: Docker Run
+    shell: open -a Docker
+
