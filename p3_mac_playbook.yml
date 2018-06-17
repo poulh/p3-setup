@@ -2,7 +2,7 @@
 - hosts: localhost
   vars_prompt:
     - name: text_editor
-      prompt: "Pick a text editor( emacs|pycharm ):"
+      prompt: "Pick a text editor( emacs|pycharm|visual-studio-code ):"
       default: "skip"
       private: no
     - name: terminal_app
