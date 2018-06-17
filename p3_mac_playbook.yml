@@ -82,6 +82,21 @@
     ignore_errors: yes
     homebrew_cask:
       name: postman
+  - name: Yeoman Scaffolding Helper
+    ignore_errors: yes
+    npm:
+      name: yo
+      global: yes
+  - name: Grunt Task Runner
+    ignore_errors: yes
+    npm:
+      name: grunt-cli
+      global: yes
+  - name: Bower JS Package Manager
+    ignore_errors: yes
+    npm:
+      name: bower
+      global: yes
   - name: Install Text Editor
     homebrew_cask:
       name: "{{ text_editor }}"
