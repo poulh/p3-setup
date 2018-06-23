@@ -97,6 +97,16 @@
     npm:
       name: bower
       global: yes
+  - name: Angular 2+
+    ignore_errors: yes
+    npm:
+      name: "@angular/cli"
+      global: yes
+  - name: Create React App
+    ignore_errors: yes
+    npm:
+      name: create-react-app
+      global: yes
   - name: Install Text Editor
     homebrew_cask:
       name: "{{ text_editor }}"
