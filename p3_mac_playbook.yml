@@ -61,6 +61,9 @@
   - name: Tmux Terminal Multiplexer
     homebrew:
       name: tmux
+  - name: Watch - command line tool for looping over a command continuously
+    homebrew:
+      name: watch
   - name: Hub GitHub CLI
     homebrew:
       name: hub
@@ -82,6 +85,14 @@
     ignore_errors: yes
     homebrew_cask:
       name: postman
+  - name: MongoDB Compase ( GUI )
+    ignore_errors: yes
+    homebrew_cask:
+      name: mongodb-compass
+  - name: Sqlite Browser ( GUI )
+    ignore_errors: yes
+    homebrew_cask:
+      name: db-browser-for-sqlite
   - name: Yeoman Scaffolding Helper
     ignore_errors: yes
     npm:
