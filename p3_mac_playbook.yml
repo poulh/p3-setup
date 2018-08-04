@@ -64,6 +64,9 @@
   - name: Watch - command line tool for looping over a command continuously
     homebrew:
       name: watch
+  - name: svn subversion
+    homebrew:
+      name: subversion
   - name: Hub GitHub CLI
     homebrew:
       name: hub
@@ -81,6 +84,10 @@
     ignore_errors: yes
     homebrew_cask:
       name: google-chrome
+  - name: Cyberduck FTP
+    ignore_errors: yes
+    homebrew_cask:
+      name: cyberduck
   - name: Install Postman REST Tool
     ignore_errors: yes
     homebrew_cask:
