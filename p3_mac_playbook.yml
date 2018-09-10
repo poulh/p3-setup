@@ -1,4 +1,4 @@
----  
+---
 - hosts: localhost
   vars_prompt:
     - name: text_editor
@@ -79,11 +79,15 @@
   - name: Docker
     homebrew_cask:
       name: docker
-    notify: Docker Run    
+    notify: Docker Run
   - name: Google Chrome
     ignore_errors: yes
     homebrew_cask:
       name: google-chrome
+  - name: Mamp (Apache MySQL running locally)
+    ignore_errors: yes
+    homebrew_cask:
+      name: mamp
   - name: Cyberduck FTP
     ignore_errors: yes
     homebrew_cask:
@@ -104,6 +108,11 @@
     ignore_errors: yes
     npm:
       name: yo
+      global: yes
+  - name: NGX Rocket - Angular Project Generator
+    ignore_errors: yes
+    npm:
+      name: generator-ngx-rocket
       global: yes
   - name: Grunt Task Runner
     ignore_errors: yes
@@ -129,7 +138,7 @@
     homebrew_cask:
       name: "{{ text_editor }}"
     when: text_editor != "skip"
-  - name: Install Terminal 
+  - name: Install Terminal
     homebrew_cask:
       name: "{{ terminal_app }}"
     when: terminal_app != "skip"
@@ -144,4 +153,3 @@
   handlers:
   - name: Docker Run
     shell: open -a Docker
-
