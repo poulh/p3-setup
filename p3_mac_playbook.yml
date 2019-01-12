@@ -124,6 +124,10 @@
     npm:
       name: bower
       global: yes
+  - name: AWS
+    ignore_errors: yes
+    pip:
+      name: awscli
   - name: Angular 2+
     ignore_errors: yes
     npm:
