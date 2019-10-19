@@ -5,9 +5,13 @@
       prompt: "Pick a text editor( emacs|pycharm|visual-studio-code ):"
       default: "skip"
       private: no
-    - name: terminal_app
-      prompt: "Install an alternative terminal ( iterm2 ):"
-      default: "skip"
+    - name: alternate_terminal
+      prompt: "Pick a terminal application other than default (iterm2):"
+      default: "default"
+      private: no
+    - name: alternate_python
+      prompt: "Pick a python runtime other than default (python3):"
+      default: "default"
       private: no
     - name: markdown_app
       prompt: "Pick a markdown (.md) editor ( macdown ):"
@@ -58,13 +62,10 @@
   - name: install oh-my-zsh
     shell: 'sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"'
     when: change_shell.user_input == "y" and new_shell.stdout != "" and new_shell_choice.user_input == "zsh" and oh_my_zsh_installed.stdout == "" and install_oh_my_zsh.user_input == "y"
-  - name: Tmux Terminal Multiplexer
-    homebrew:
-      name: tmux
   - name: Watch - command line tool for looping over a command continuously
     homebrew:
       name: watch
-  - name: svn subversion
+  - name: svn subversion - older source control that is occasionally needed
     homebrew:
       name: subversion
   - name: Hub GitHub CLI
@@ -88,6 +89,10 @@
     ignore_errors: yes
     homebrew_cask:
       name: mamp
+  - name: MySQL Workbench ( GUI )
+    ignore_errors: yes
+    homebrew_cask:
+      name: mysqlworkbench
   - name: Cyberduck FTP
     ignore_errors: yes
     homebrew_cask:
@@ -104,11 +109,6 @@
     ignore_errors: yes
     homebrew_cask:
       name: db-browser-for-sqlite
-  - name: Yeoman Scaffolding Helper
-    ignore_errors: yes
-    npm:
-      name: yo
-      global: yes
   - name: NGX Rocket - Angular Project Generator
     ignore_errors: yes
     npm:
@@ -142,10 +142,14 @@
     homebrew_cask:
       name: "{{ text_editor }}"
     when: text_editor != "skip"
-  - name: Install Terminal
+  - name: Install Alternate Terminal
     homebrew_cask:
-      name: "{{ terminal_app }}"
-    when: terminal_app != "skip"
+      name: "{{ alternate_terminal }}"
+    when: alternate_terminal != "default"
+  - name: Install Alternate Python
+    homebrew:
+      name: "{{ alternate_python }}"
+    when: alternate_python != "default"
   - name: Install Markdown Editor
     homebrew_cask:
       name: "{{ markdown_app }}"

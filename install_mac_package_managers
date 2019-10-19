@@ -8,8 +8,8 @@ import sys
 MANAGERS = [{
     'name': 'homebrew',
     'cmds': [
+        'xcode-select --install',
         '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"',
-        'brew tap caskroom/cask'
     ],
     'check': 'which brew > /dev/null',
 }, {
@@ -34,16 +34,20 @@ MANAGERS = [{
 def parse_args():
 
     parser = argparse.ArgumentParser(
-        description=
-        'Installs various programs required for Symbiont development. Most using various package managers'
+        description='Installs various programs required for Symbiont development. Most using various package managers'
     )
     parser.add_argument(
         '--dry-run',
         action='store_true',
         help='do not actually run the commands')
 
-    for mgr in MANAGERS:
-        name = mgr['name']
+    parser.add_argument(
+        '--force',
+        action='store_true',
+        help='run install command regardless if already installed')
+
+    for manager in MANAGERS:
+        name = manager['name']
 
         parser.add_argument(
             '--{}'.format(name),
@@ -116,19 +120,27 @@ def main():
             "sudo/root detected. do not run this script as root. it will prompt you for sudo when/if needed"
         )
 
-    for mgr in MANAGERS:
-        name = mgr['name']
+    for manager in MANAGERS:
+        name = manager['name']
+
+        # if the include array is not null, but the manager name isn't in the list, skip
         if args.include and (name not in args.include):
             continue
+
+        # if the exclude array is not null, and the manager name is in the list, skip
         if args.exclude and (name in args.exclude):
             continue
 
-        ret = run_cmd(mgr['check'], dry_run=False, verbose=False)
-        if ret != 0:
-            for cmd in mgr['cmds']:
+        return_val = 1
+        if not args.force:
+            return_val = run_cmd(
+                manager['check'], dry_run=False, verbose=False)
+
+        if return_val != 0:
+            for cmd in manager['cmds']:
                 run_cmd(cmd, args.dry_run)
         else:
-            print('{} already installed'.format(mgr['name']))
+            print('{} already installed'.format(manager['name']))
 
 
 try:
