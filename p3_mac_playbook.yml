@@ -1,13 +1,17 @@
----  
+---
 - hosts: localhost
   vars_prompt:
     - name: text_editor
       prompt: "Pick a text editor( emacs|pycharm|visual-studio-code ):"
       default: "skip"
       private: no
-    - name: terminal_app
-      prompt: "Install an alternative terminal ( iterm2 ):"
-      default: "skip"
+    - name: alternate_terminal
+      prompt: "Pick a terminal application other than default (iterm2):"
+      default: "default"
+      private: no
+    - name: alternate_python
+      prompt: "Pick a python runtime other than default (python3):"
+      default: "default"
       private: no
     - name: markdown_app
       prompt: "Pick a markdown (.md) editor ( macdown ):"
@@ -61,7 +65,7 @@
   - name: Watch - command line tool for looping over a command continuously
     homebrew:
       name: watch
-  - name: svn subversion
+  - name: svn subversion - older source control that is occasionally needed
     homebrew:
       name: subversion
   - name: Hub GitHub CLI
@@ -73,18 +77,22 @@
   - name: HttPie curl alternative
     homebrew:
       name: httpie
-  - name: Python 3
-    homebrew:
-      name: python
   - name: Docker
-    ignore_errors: yes
     homebrew_cask:
       name: docker
-    notify: Docker Run    
+    notify: Docker Run
   - name: Google Chrome
     ignore_errors: yes
     homebrew_cask:
       name: google-chrome
+  - name: Mamp (Apache MySQL running locally)
+    ignore_errors: yes
+    homebrew_cask:
+      name: mamp
+  - name: MySQL Workbench ( GUI )
+    ignore_errors: yes
+    homebrew_cask:
+      name: mysqlworkbench
   - name: Cyberduck FTP
     ignore_errors: yes
     homebrew_cask:
@@ -101,10 +109,10 @@
     ignore_errors: yes
     homebrew_cask:
       name: db-browser-for-sqlite
-  - name: Yeoman Scaffolding Helper
+  - name: NGX Rocket - Angular Project Generator
     ignore_errors: yes
     npm:
-      name: yo
+      name: generator-ngx-rocket
       global: yes
   - name: Grunt Task Runner
     ignore_errors: yes
@@ -116,6 +124,10 @@
     npm:
       name: bower
       global: yes
+  - name: AWS
+    ignore_errors: yes
+    pip:
+      name: awscli
   - name: Angular 2+
     ignore_errors: yes
     npm:
@@ -127,26 +139,25 @@
       name: create-react-app
       global: yes
   - name: Install Text Editor
-    ignore_errors: yes
     homebrew_cask:
       name: "{{ text_editor }}"
     when: text_editor != "skip"
-  - name: Install Terminal 
-    ignore_errors: yes
+  - name: Install Alternate Terminal
     homebrew_cask:
-      name: "{{ terminal_app }}"
-    when: terminal_app != "skip"
+      name: "{{ alternate_terminal }}"
+    when: alternate_terminal != "default"
+  - name: Install Alternate Python
+    homebrew:
+      name: "{{ alternate_python }}"
+    when: alternate_python != "default"
   - name: Install Markdown Editor
-    ignore_errors: yes
     homebrew_cask:
       name: "{{ markdown_app }}"
     when: markdown_app != "skip"
   - name: Install Git GUI
-    ignore_errors: yes
     homebrew_cask:
       name: "{{ git_gui_app }}"
     when: git_gui_app != "no"
   handlers:
   - name: Docker Run
     shell: open -a Docker
-
