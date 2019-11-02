@@ -5,30 +5,39 @@ import os
 import subprocess
 import sys
 
-MANAGERS = [{
-    'name': 'homebrew',
-    'cmds': [
-        'xcode-select --install',
-        '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"',
-    ],
-    'check': 'which brew > /dev/null',
-}, {
-    'name': 'pip',
-    'cmds': [
-        'sudo easy_install pip',
-    ],
-    'check': 'which pip > /dev/null',
-}, {
-    'name': 'npm',
-    'cmds': [
-        'brew install npm',
-    ],
-    'check': 'which npm > /dev/null',
-}, {
-    'name': 'ansible',
-    'cmds': ['brew install ansible'],
-    'check': 'which ansible-playbook > /dev/null',
-}]
+MANAGERS = [
+        {
+            'name':'xcode-select',
+            'cmds' : [ 
+                'xcode-select --install'
+                ],
+            'check': 'xcode-select -p > /dev/null'
+        },{
+            'name': 'homebrew',
+            'cmds': [
+                'xcode-select --install',
+                '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"',
+            ],
+            'check': 'which brew > /dev/null',
+        }, {
+            'name': 'pip',
+            'cmds': [
+                'sudo easy_install pip',
+            ],
+            'check': 'which pip > /dev/null',
+        }, {
+            'name': 'npm',
+            'cmds': [
+                'brew install npm',
+            ],
+            'check': 'which npm > /dev/null',
+            'update':'brue update npm'
+        }, {
+            'name': 'ansible',
+            'cmds': ['brew install ansible'],
+            'check': 'which ansible-playbook > /dev/null',
+            'update':'brew upgrade ansible'
+        }]
 
 
 def parse_args():
@@ -132,11 +141,15 @@ def main():
             continue
 
         return_val = 1
-        if not args.force:
-            return_val = run_cmd(
-                manager['check'], dry_run=False, verbose=False)
+            
+        app_installed = (0 == run_cmd(manager['check'], dry_run=False,
+         verbose=True))
 
-        if return_val != 0:
+
+        if 'update' in manager:
+            cmd = manager['update']
+            run_cmd(cmd, args.dry_run)
+        elif args.force or (not app_installed):
             for cmd in manager['cmds']:
                 run_cmd(cmd, args.dry_run)
         else:
