@@ -58,9 +58,6 @@
   - name: install oh-my-zsh
     shell: 'sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"'
     when: change_shell.user_input == "y" and new_shell.stdout != "" and new_shell_choice.user_input == "zsh" and oh_my_zsh_installed.stdout == "" and install_oh_my_zsh.user_input == "y"
-  - name: Tmux Terminal Multiplexer
-    homebrew:
-      name: tmux
   - name: Watch - command line tool for looping over a command continuously
     homebrew:
       name: watch
@@ -76,6 +73,9 @@
   - name: HttPie curl alternative
     homebrew:
       name: httpie
+  - name: Python 3
+    homebrew:
+      name: python
   - name: Docker
     ignore_errors: yes
     homebrew_cask:
