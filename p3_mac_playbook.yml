@@ -78,6 +78,7 @@
     homebrew:
       name: httpie
   - name: Docker
+    ignore_errors: yes
     homebrew_cask:
       name: docker
     notify: Docker Run
@@ -114,16 +115,6 @@
     npm:
       name: generator-ngx-rocket
       global: yes
-  - name: Grunt Task Runner
-    ignore_errors: yes
-    npm:
-      name: grunt-cli
-      global: yes
-  - name: Bower JS Package Manager
-    ignore_errors: yes
-    npm:
-      name: bower
-      global: yes
   - name: AWS
     ignore_errors: yes
     pip:
@@ -132,6 +123,11 @@
     ignore_errors: yes
     npm:
       name: "@angular/cli"
+      global: yes
+  - name: Loopback
+    ignore_errors: yes
+    npm:
+      name: "@loopback/cli"
       global: yes
   - name: Create React App
     ignore_errors: yes
