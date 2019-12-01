@@ -98,6 +98,10 @@
     ignore_errors: yes
     homebrew_cask:
       name: cyberduck
+  - name: Anaconda
+    ignore_errors: yes
+    homebrew_cask:
+      name: anaconda
   - name: Install Postman REST Tool
     ignore_errors: yes
     homebrew_cask:
@@ -128,11 +132,6 @@
     ignore_errors: yes
     npm:
       name: "@loopback/cli"
-      global: yes
-  - name: Create React App
-    ignore_errors: yes
-    npm:
-      name: create-react-app
       global: yes
   - name: Install Text Editor
     homebrew_cask:

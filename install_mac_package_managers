@@ -146,10 +146,10 @@ def main():
          verbose=True))
 
 
-        if 'update' in manager:
+        if app_installed and 'update' in manager:
             cmd = manager['update']
             run_cmd(cmd, args.dry_run)
-        elif args.force or (not app_installed):
+        elif not app_installed or args.force:
             for cmd in manager['cmds']:
                 run_cmd(cmd, args.dry_run)
         else:
