@@ -102,6 +102,10 @@
     ignore_errors: yes
     homebrew_cask:
       name: anaconda
+  - name: Dropbox
+    ignore_errors: yes
+    homebrew_cask:
+      name: dropbox
   - name: Install Postman REST Tool
     ignore_errors: yes
     homebrew_cask:
